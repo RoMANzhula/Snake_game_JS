@@ -1,0 +1,368 @@
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+const SIZE = 336;
+const IMAGE_SIZE = 16;
+const ALL_CELLS = 400;
+
+const snakeCell = new Image();
+snakeCell.src = "images/ball.png";
+const apple = new Image();
+apple.src = "images/apple.png";
+
+let appleX, appleY;
+const x = new Array(ALL_CELLS);
+const y = new Array(ALL_CELLS);
+
+let snakeCells;
+let left = false;
+let right = true;
+let up = false;
+let down = false;
+let inGame = true;
+
+function initializationGame() {
+    snakeCells = 3;
+    for (let i = 0; i < snakeCells; i++) {
+        x[i] = 48 - (i * IMAGE_SIZE);
+        y[i] = 48;
+    }
+
+    createApple();
+
+    setInterval(gameLoop, 300);
+}
+
+function createApple() {
+    appleX = Math.floor(Math.random() * 20) * IMAGE_SIZE;
+    appleY = Math.floor(Math.random() * 20) * IMAGE_SIZE;
+}
+
+function move() {
+    for (let i = snakeCells; i > 0; i--) {
+        x[i] = x[i - 1];
+        y[i] = y[i - 1];
+    }
+    if (left) {
+        x[0] -= IMAGE_SIZE;
+    }
+    if (right) {
+        x[0] += IMAGE_SIZE;
+    }
+    if (up) {
+        y[0] -= IMAGE_SIZE;
+    }
+    if (down) {
+        y[0] += IMAGE_SIZE;
+    }
+}
+
+function checkAppleOnTheWay() {
+    if (x[0] === appleX && y[0] === appleY) {
+        snakeCells++;
+        createApple();
+    }
+}
+
+function checkCollisionWithUs() {
+    for (let i = snakeCells; i > 0; i--) {
+        if (i > 4 && x[0] === x[i] && y[0] === y[i]) {
+            inGame = false;
+        }
+    }
+}
+
+function checkCollisionWithFields() {
+    if (x[0] >= SIZE || x[0] < 0 || y[0] >= SIZE || y[0] < 0) {
+        inGame = false;
+    }
+}
+
+function paintComponent() {
+    ctx.clearRect(0, 0, SIZE, SIZE);
+
+    if (inGame) {
+        ctx.drawImage(apple, appleX, appleY, IMAGE_SIZE, IMAGE_SIZE);
+        for (let i = 0; i < snakeCells; i++) {
+            ctx.drawImage(snakeCell, x[i], y[i], IMAGE_SIZE, IMAGE_SIZE);
+        }
+    } else {
+        const gameOver = "GAME OVER!";
+        ctx.fillStyle = "red";
+        ctx.font = "18px Arial";
+        ctx.fillText(gameOver, 110, SIZE / 2);
+    }
+}
+
+function gameLoop() {
+    if (inGame) {
+        checkAppleOnTheWay();
+        checkCollisionWithUs();
+        checkCollisionWithFields();
+        move();
+    }
+    paintComponent();
+}
+
+window.addEventListener("keydown", function (e) {
+    const key = e.keyCode;
+    if (key === 37 && !right) {
+        left = true;
+        up = false;
+        down = false;
+    }
+    if (key === 39 && !left) {
+        right = true;
+        up = false;
+        down = false;
+    }
+    if (key === 38 && !down) {
+        right = false;
+        up = true;
+        left = false;
+    }
+    if (key === 40 && !up) {
+        right = false;
+        down = true;
+        left = false;
+    }
+});
+
+initializationGame();
+
+// Додаємо обробник події для кнопки "Пауза"
+document.getElementById("pause-button").addEventListener("click", function () {
+  if (inGame) {
+      // Пауза гри
+      inGame = false; // Встановлюємо флаг паузи
+      // Додайте код для призупинення таймера анімації або відображення повідомлення про паузу
+  } else {
+      // Продовження гри з паузи
+      inGame = true; // Скасовуємо флаг паузи
+      // Додайте код для відновлення гри
+  }
+});
+
+// Додаємо обробник події для кнопки "Перезапуск"
+document.getElementById("restart-button").addEventListener("click", function () {
+  // Перезапуск гри
+  initializationGame(); // Це може бути ваша функція для ініціалізації гри (початок гри знову)
+  inGame = true; // Скасовуємо флаг завершення гри
+  // Додайте код для скидання стану гри до початкового
+});
+
+// Додаємо обробник події для кнопки "Закінчити гру"
+document.getElementById("end-button").addEventListener("click", function () {
+  // Завершення гри
+  inGame = false; // Встановлюємо флаг завершення гри
+  // Додайте код для завершення гри, такий як відображення повідомлення про завершення гри
+  // і очищення полотна гри (якщо потрібно)
+});
+
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+const SIZE = 336;
+const IMAGE_SIZE = 16;
+const ALL_CELLS = 400;
+
+const snakeCell = new Image();
+snakeCell.src = "images/ball.png";
+const apple = new Image();
+apple.src = "images/apple.png";
+
+let appleX, appleY;
+const x = new Array(ALL_CELLS);
+const y = new Array(ALL_CELLS);
+
+let snakeCells;
+let left = false;
+let right = true;
+let up = false;
+let down = false;
+let inGame = true;
+
+let gameInterval; // Глобальна змінна для таймера гри
+
+function initializationGame() {
+    // Видаляємо попередній таймер, якщо він існує
+    if (gameInterval) {
+        clearInterval(gameInterval);
+    }
+
+    snakeCells = 3;
+    for (let i = 0; i < snakeCells; i++) {
+        x[i] = 48 - (i * IMAGE_SIZE);
+        y[i] = 48;
+    }
+
+    createApple();
+
+    // Створюємо новий таймер гри
+    gameInterval = setInterval(gameLoop, 300);
+}
+
+function createApple() {
+    appleX = Math.floor(Math.random() * 20) * IMAGE_SIZE;
+    appleY = Math.floor(Math.random() * 20) * IMAGE_SIZE;
+}
+
+function move() {
+    for (let i = snakeCells; i > 0; i--) {
+        x[i] = x[i - 1];
+        y[i] = y[i - 1];
+    }
+    if (left) {
+        x[0] -= IMAGE_SIZE;
+    }
+    if (right) {
+        x[0] += IMAGE_SIZE;
+    }
+    if (up) {
+        y[0] -= IMAGE_SIZE;
+    }
+    if (down) {
+        y[0] += IMAGE_SIZE;
+    }
+}
+
+function checkAppleOnTheWay() {
+    if (x[0] === appleX && y[0] === appleY) {
+        snakeCells++;
+        createApple();
+    }
+}
+
+function checkCollisionWithUs() {
+    for (let i = snakeCells; i > 0; i--) {
+        if (i > 4 && x[0] === x[i] && y[0] === y[i]) {
+            inGame = false;
+        }
+    }
+}
+
+function checkCollisionWithFields() {
+    if (x[0] >= SIZE || x[0] < 0 || y[0] >= SIZE || y[0] < 0) {
+        inGame = false;
+    }
+}
+
+function paintComponent() {
+    ctx.clearRect(0, 0, SIZE, SIZE);
+
+    // Малюємо контур ігрового поля
+    ctx.strokeStyle = "white"; // Колір контуру (можете змінити на бажаний)
+    ctx.lineWidth = 2; // Товщина ліній контуру (можете змінити на бажаний розмір)
+    ctx.strokeRect(0, 0, SIZE, SIZE); // Малюємо прямокутник навколо ігрового поля
+
+    if (inGame) {
+        ctx.drawImage(apple, appleX, appleY, IMAGE_SIZE, IMAGE_SIZE);
+        for (let i = 0; i < snakeCells; i++) {
+            ctx.drawImage(snakeCell, x[i], y[i], IMAGE_SIZE, IMAGE_SIZE);
+        }
+    } else {
+/*         const gameOver = "GAME OVER!";
+        ctx.fillStyle = "red";
+        ctx.font = "18px Arial";
+        ctx.fillText(gameOver, 110, SIZE / 2); */
+        if (document.getElementById("game-over-message").classList.contains("hidden")) {
+          document.getElementById("end-button").click(); // Спрацьовуємо логіку кнопки "Кінець гри"
+      }
+    }
+
+    function gameLoop() {
+      if (inGame) {
+          checkAppleOnTheWay();
+          checkCollisionWithUs();
+          checkCollisionWithFields();
+          move();
+      }
+      paintComponent(); // Викликаємо функцію малювання після оновлення гри
+  }
+}
+
+function gameLoop() {
+    if (inGame) {
+        checkAppleOnTheWay();
+        checkCollisionWithUs();
+        checkCollisionWithFields();
+        move();
+    }
+    paintComponent();
+}
+
+window.addEventListener("keydown", function (e) {
+    const key = e.keyCode;
+    if (key === 37 && !right) {
+        left = true;
+        up = false;
+        down = false;
+    }
+    if (key === 39 && !left) {
+        right = true;
+        up = false;
+        down = false;
+    }
+    if (key === 38 && !down) {
+        right = false;
+        up = true;
+        left = false;
+    }
+    if (key === 40 && !up) {
+        right = false;
+        down = true;
+        left = false;
+    }
+});
+
+// Ініціалізація гри при завантаженні сторінки
+initializationGame();
+
+
+// Оголосіть флаг isPaused в глобальному контексті
+let isPaused = false;
+
+function startGame() {
+    // Перевірка, чи існує попередній таймер і видалення його
+    if (gameInterval) {
+        clearInterval(gameInterval);
+    }
+
+    // Створення нового таймера гри
+    gameInterval = setInterval(updateGameArea, 300); // Наприклад, 300 мілісекунд для оновлення гри
+}
+
+function stopGame() {
+    // Видалення таймера гри при завершенні гри
+    clearInterval(gameInterval);
+    gameInterval = null;
+}
+
+// Оновлений код для кнопки "Пауза"
+document.getElementById("pause-button").addEventListener("click", function () {
+  if (inGame) {
+    if (!isPaused) {
+      isPaused = true;
+      document.getElementById("pause-message").classList.remove("hidden"); // Показуємо повідомлення "Пауза"
+      clearInterval(gameInterval); // Зупиняємо таймер гри
+    } else {
+      isPaused = false;
+      document.getElementById("pause-message").classList.add("hidden"); // Сховати повідомлення "Пауза"
+      gameInterval = setInterval(gameLoop, 300); // Відновлюємо таймер гри
+    }
+  }
+});
+
+document.getElementById("end-button").addEventListener("click", function () {
+  inGame = false;
+  document.getElementById("game-over-message").classList.remove("hidden");
+  document.getElementById("pause-message").classList.add("hidden"); // Сховати повідомлення "Пауза"
+});
+
+// Додатковий код для кнопки "Перезапуск"
+document.getElementById("restart-button").addEventListener("click", function () {
+  initializationGame();
+  inGame = true;
+  document.getElementById("pause-message").classList.add("hidden");
+  document.getElementById("game-over-message").classList.add("hidden");
+});

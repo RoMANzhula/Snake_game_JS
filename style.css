@@ -1,0 +1,76 @@
+body {
+  background-image: url('images/backfone.jpg'); /* зображення фону сторінки */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex; /* flex-контейнер */
+  justify-content: center; /* горизонтально відцентровуємо контент */
+  align-items: center; /* вертикально відцентровуємо контент */
+}
+
+/* стилі для області гри (центр екрану) */
+#game-container {
+  background-color: #0074D9; /* фон області гри */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  border: 2px solid black;
+  margin: 20px;
+  border-radius: 5px;
+}
+
+/* стилі для кнопок */
+#game-buttons {
+  margin-top: 20px;
+  width: 100%; /* розтягуємо кнопки на всю ширину вікна гри */
+  display: flex;
+  justify-content: space-around; /* рівномірно розподіляємо кнопоки по ширині */
+}
+
+#pause-button,
+#restart-button,
+#end-button {
+  padding: 10px 20px;
+  margin: 5px;
+  background-color: #FF4136; /* колір кнопок */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#pause-button:hover,
+#restart-button:hover
+#end-button:hover {
+  background-color: #D81E05; /* темніший червоний колір при наведенні */
+}
+
+/* ховаємо повідомлення "PAUSE" та "GAME OVER" за замовчуванням */
+.hidden {
+  display: none;
+}
+
+/* стиль для повідомлення "PAUSE" */
+#pause-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  color: red; 
+}
+
+/* стиль для повідомлення "GAME OVER" */
+#game-over-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  color: red; 
+}
+
